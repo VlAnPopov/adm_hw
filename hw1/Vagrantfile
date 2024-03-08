@@ -1,0 +1,29 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+
+ENV['VAGRANT_SERVER_URL'] = 'https://vagrant.elab.pro'
+
+boxes = [
+  { :name => "kernel-update", :box => "centos/8", :memory => 2048, :cpus => 2, :script => '~/admpro/hw1/kernup.sh' },  
+ ]
+
+Vagrant.configure("2") do |config|
+
+  boxes.each do |box|
+    # А зачем в методичке отключение общей папки в ВМ? Пока не буду это делать.
+    config.vm.define box[:name] do |target|
+      target.vm.provider "virtualbox" do |v|
+        v.name = box[:name]
+        v.memory = box[:memory]
+        v.cpus = box[:cpus]
+        v.customize ["modifyvm", :id, "--groups", "/ADV_HW"]
+      end
+      target.vm.box = box[:box]
+      target.vm.communicator = "ssh"
+      target.vm.hostname = box[:name]
+      target.vm.provision "shell", path: box[:script]
+      target.vm.provision "reboot", type: "shell", inline: "", reboot: true
+    end
+  end
+end
