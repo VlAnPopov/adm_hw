@@ -19,3 +19,4 @@ cd /usr/src/linux-6.7.9/
 yes "" | make oldconfig
 make menuconfig
 make
+make modules_install install
